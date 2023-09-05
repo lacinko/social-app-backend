@@ -8,6 +8,7 @@ import validateEnv from './utils/validateEnv'
 import { PrismaClient } from '@prisma/client'
 import authRouter from './routes/auth.routes'
 import userRouter from './routes/user.routes'
+import postRouter from './routes/post.routes'
 import AppError from './utils/appError'
 
 validateEnv()
@@ -42,6 +43,7 @@ async function bootstrap() {
   // ROUTES
   app.use('/api/auth', authRouter)
   app.use('/api/users', userRouter)
+  app.use('/api/posts', postRouter)
 
   // Testing
   app.get('/api/healthchecker', (_, res: Response) => {

@@ -14,7 +14,7 @@ export const createUser = async (input: Prisma.UserCreateInput) => {
 }
 
 export const findUser = async (
-  where: Partial<Prisma.UserCreateInput>,
+  where: Prisma.UserWhereInput,
   select?: Prisma.UserSelect
 ) => {
   return (await prisma.user.findFirst({
@@ -24,7 +24,7 @@ export const findUser = async (
 }
 
 export const findUniqueUser = async (
-  where: Prisma.UserWhereUniqueInput,
+  where: any,
   select?: Prisma.UserSelect
 ) => {
   return (await prisma.user.findUnique({
@@ -52,7 +52,7 @@ export const signTokens = async (user: Prisma.UserCreateInput) => {
 }
 
 export const updateUser = async (
-  where: any /*Partial<Prisma.UserCreateInput>*/,
+  where: Prisma.UserWhereUniqueInput /*Partial<Prisma.UserCreateInput>*/,
   data: Prisma.UserUpdateInput,
   select?: Prisma.UserSelect
 ) => {
