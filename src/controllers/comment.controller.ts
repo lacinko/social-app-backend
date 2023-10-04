@@ -17,9 +17,9 @@ export const createCommentHandler = async (
   try {
     const comment = await createComment({
       content,
-      parent: parentId && { connect: { id: parentId || null } },
+      ...(parentId && { parent: { connect: { id: parentId } } }),
       author: { connect: { id: res.locals.user.id } },
-      post: postId && { connect: { id: postId || null } },
+      ...(postId && { post: { connect: { id: postId } } }),
     });
 
     res.status(201).json({
