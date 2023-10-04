@@ -32,6 +32,9 @@ model User{
   passwordResetAt DateTime?
 
   posts Post[]
+  collections CollectionAccount[]
+  comments Comment[]
+  likes Like[]
 
   @@unique([email, verificationCode, passwordResetToken])
   @@index([email, verificationCode,passwordResetToken])
@@ -55,10 +58,103 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [authorId], references: [id])
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId String
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String
+
+  likes Like[]
+  comments Comment[]
 
   @@unique([title])
   @@index([title])
 }
 
+enum CollectionType {
+  PUBLIC
+  RESTRICTED
+  PRIVATE
+}
+
+model Collection {
+  @@map(name: "collections")
+  
+  id        String            @id @default(uuid())
+  name      String            
+  nsfw      Boolean
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  type      CollectionType
+
+  members   CollectionAccount[] 
+  posts     Post[]
+
+  @@unique([name])
+  @@index([name])
+}
+
+model CollectionAccount {
+  @@map(name: "collectionaccounts")
+
+  id          String          @id @default(uuid())
+  role        CollectionRole
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collection  Collection      @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  userId      String
+  collectionId String
+
+  @@unique([userId, collectionId])
+  @@index([userId, collectionId])
+}
+
+enum CollectionRole {
+  MEMBER
+  MODERATOR
+  ADMIN
+}
+
+model Comment {
+  @@map("comments")
+
+  id String @id @default(uuid())
+  content String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String
+
+  parent Comment? @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId String? 
+  children Comment[] @relation("ParentChild")
+
+  likes Like[]
+
+  @@unique([id])
+  @@index([id])
+}
+
+model Like{
+  @@map("likes")
+
+  id String @id @default(uuid())
+  isPositive Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade )
+  authorId String
+
+  comments Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String?
+
+  posts Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String?
+
+  @@unique([id])
+  @@index([id])
+}

@@ -1,34 +1,40 @@
-import express from 'express'
+import express from "express";
 import {
   createPostHandler,
   deletePostHandler,
   getPostHandler,
+  getPostsByCollectionIdHandler,
   getPostsHandler,
   updatePostHandler,
-} from '../controllers/post.controller'
-import { deserializeUser } from '../middleware/deserializeUser'
-import { requireUser } from '../middleware/requireUser'
-import { validate } from '../middleware/validate'
+} from "../controllers/post.controller";
+import { deserializeUser } from "../middleware/deserializeUser";
+import { requireUser } from "../middleware/requireUser";
+import { validate } from "../middleware/validate";
 import {
   createPostSchema,
   deletePostSchema,
   getPostSchema,
+  getPostsByCollectionIdSchema,
   updatePostSchema,
-} from '../schemas/post.schema'
+} from "../schemas/post.schema";
 
-const router = express.Router()
+const router = express.Router();
 
-router.use(deserializeUser, requireUser)
+router.use(deserializeUser, requireUser);
 
 router
-  .route('/')
+  .route("/")
   .post(validate(createPostSchema), createPostHandler)
-  .get(getPostsHandler)
+  .get(getPostsHandler);
 
 router
-  .route('/:postId')
+  .route("/collection/:collectionId")
+  .get(validate(getPostsByCollectionIdSchema), getPostsByCollectionIdHandler);
+
+router
+  .route("/:postId")
   .get(validate(getPostSchema), getPostHandler)
   .patch(validate(updatePostSchema), updatePostHandler)
-  .delete(validate(deletePostSchema), deletePostHandler)
+  .delete(validate(deletePostSchema), deletePostHandler);
 
-export default router
+export default router;

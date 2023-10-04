@@ -1,4 +1,4 @@
-import express from 'express'
+import express from "express";
 import {
   forgotPasswordHandler,
   loginUserHandler,
@@ -7,44 +7,44 @@ import {
   registerUserHandler,
   resetPasswordHandler,
   verifyEmailHandler,
-} from '../controllers/auth.controller'
-import { deserializeUser } from '../middleware/deserializeUser'
-import { requireUser } from '../middleware/requireUser'
-import { validate } from '../middleware/validate'
+} from "../controllers/auth.controller";
+import { deserializeUser } from "../middleware/deserializeUser";
+import { requireUser } from "../middleware/requireUser";
+import { validate } from "../middleware/validate";
 import {
   forgotPasswordSchema,
   loginUserSchema,
   registerUserSchema,
   resetPasswordSchema,
   verifyEmailSchema,
-} from '../schemas/user.schema'
+} from "../schemas/user.schema";
 
-const router = express.Router()
+const router = express.Router();
 
-router.post('/register', validate(registerUserSchema), registerUserHandler)
+router.post("/register", validate(registerUserSchema), registerUserHandler);
 
-router.post('/login', validate(loginUserSchema), loginUserHandler)
+router.post("/login", validate(loginUserSchema), loginUserHandler);
 
-router.get('/refresh', refreshAccessTokenHandler)
+router.get("/refresh", refreshAccessTokenHandler);
 
-router.get('/logout', deserializeUser, requireUser, logoutUserHandler)
+router.get("/logout", deserializeUser, requireUser, logoutUserHandler);
 
 router.get(
-  '/verifyemail/:verificationCode',
+  "/verifyemail/:verificationCode",
   validate(verifyEmailSchema),
   verifyEmailHandler
-)
+);
 
 router.post(
-  '/forgotpassword',
+  "/forgotpassword",
   validate(forgotPasswordSchema),
   forgotPasswordHandler
-)
+);
 
 router.patch(
-  '/resetpassword/:resetToken',
+  "/resetpassword/:resetToken",
   validate(resetPasswordSchema),
   resetPasswordHandler
-)
+);
 
-export default router
+export default router;

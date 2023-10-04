@@ -5,15 +5,17 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import validateEnv from "./utils/validateEnv";
-import { PrismaClient } from "@prisma/client";
 import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
 import postRouter from "./routes/post.routes";
+import collectionRouter from "./routes/collection.routes";
+import commentRouter from "./routes/comment.routes";
+import likeRouter from "./routes/like.routes";
 import AppError from "./utils/appError";
+import prisma from "./utils/connectPrisma";
 
 validateEnv();
 
-const prisma = new PrismaClient();
 const app = express();
 
 async function bootstrap() {
@@ -44,6 +46,9 @@ async function bootstrap() {
   app.use("/api/auth", authRouter);
   app.use("/api/users", userRouter);
   app.use("/api/posts", postRouter);
+  app.use("/api/collections", collectionRouter);
+  app.use("/api/comments", commentRouter);
+  app.use("/api/likes", likeRouter);
 
   // Testing
   app.get("/api/healthchecker", (_, res: Response) => {

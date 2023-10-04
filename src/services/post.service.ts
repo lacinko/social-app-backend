@@ -1,27 +1,42 @@
-import { Post, Prisma, PrismaClient } from '@prisma/client'
-import { CreatePostInput, UpdatePostInput } from '../schemas/post.schema'
-
-const prisma = new PrismaClient()
+import { Post, Prisma, PrismaClient } from "@prisma/client";
+import { CreatePostInput, UpdatePostInput } from "../schemas/post.schema";
+import prisma from "../utils/connectPrisma";
 
 export const createPost = async (input: Prisma.PostCreateInput) => {
   return (await prisma.post.create({
     data: input,
-  })) as Post
-}
+  })) as Post;
+};
 
 export const getPost = async (
   where: Prisma.PostWhereInput,
-  select?: Prisma.PostSelect
+  select?: Prisma.PostSelect,
+  include?: Prisma.PostInclude
 ) => {
   return (await prisma.post.findFirst({
     where,
-    select,
-  })) as Post
-}
+    ...(!select && include && { include }),
+    ...(!include && select && { select }),
+  })) as Post & Prisma.PostInclude;
+};
 
-export const findPosts = async () => {
-  return await prisma.post.findMany()
-}
+export const getPosts = async () => {
+  return await prisma.post.findMany();
+};
+
+export const getPostsByCollectionId = async (
+  collectionId: string,
+  select?: Prisma.PostSelect,
+  include?: Prisma.PostInclude
+) => {
+  return await prisma.post.findMany({
+    where: {
+      collectionId,
+    },
+    ...(!select && include && { include }),
+    ...(!include && select && { select }),
+  });
+};
 
 export const updatePost = async (
   where: Prisma.PostWhereUniqueInput,
@@ -32,12 +47,12 @@ export const updatePost = async (
     where,
     data,
     select,
-  })) as Post
-}
+  })) as Post;
+};
 
 export const deletePost = async (
   where: Prisma.PostWhereUniqueInput,
   select?: Prisma.PostSelect
 ) => {
-  return await prisma.post.delete({ where, select })
-}
+  return await prisma.post.delete({ where, select });
+};
