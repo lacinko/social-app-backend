@@ -9,7 +9,11 @@ import {
   createCollection,
   deleteCollection,
   getCollection,
+  getCollectionAccount,
   getCollections,
+  getCollectionsAccounts,
+  joinCollection,
+  leaveCollection,
   updateCollection,
 } from "../services/collection.service";
 import AppError from "../utils/appError";
@@ -100,7 +104,15 @@ export const getCollectionsHandler = async (
   next: NextFunction
 ) => {
   try {
-    const collections = await getCollections();
+    const { where, select, include } = createObjectFromURLParamsAttributes(
+      req.query as GenericObject
+    );
+
+    const collections = await getCollections(
+      where as Prisma.CollectionWhereInput,
+      select as Prisma.CollectionSelect,
+      include as Prisma.CollectionInclude
+    );
 
     if (!collections) {
       return next(new AppError(404, "Collections not found"));
@@ -110,6 +122,31 @@ export const getCollectionsHandler = async (
       status: "success",
       data: {
         collections,
+      },
+    });
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const getCollectionsAccountsHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { where, select, include } = createObjectFromURLParamsAttributes(
+      req.query as GenericObject
+    );
+
+    const collectionsAccounts = await getCollectionsAccounts(
+      where as Prisma.CollectionAccountWhereInput
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        collectionsAccounts,
       },
     });
   } catch (err: any) {
@@ -175,6 +212,63 @@ export const deleteCollectionHandler = async (
       },
     });
   } catch (err: any) {
+    next(err);
+  }
+};
+
+export const leaveCollectionHandler = async (
+  req: Request<DeleteCollectionInput>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const collectionAccount = await getCollectionAccount({
+      collectionId: req.params.collectionId,
+      userId: res.locals.user.id,
+    });
+
+    if (!collectionAccount) {
+      return next(new AppError(404, "Collection account not found"));
+    }
+
+    await leaveCollection({ id: collectionAccount.id });
+
+    res.status(204).json({
+      status: "success",
+      data: null,
+    });
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const joinCollectionHandler = async (
+  req: Request<DeleteCollectionInput>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const collectionBody = {
+      role: req.body.role,
+      user: {
+        connect: { id: res.locals.user.id },
+      },
+      collection: {
+        connect: { id: req.params.collectionId },
+      },
+    };
+    const collectionAccount = await joinCollection(collectionBody);
+
+    res.status(201).json({ status: "success", data: { collectionAccount } });
+  } catch (err: any) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === "P2002") {
+        return res.status(409).json({
+          status: "fail",
+          message: "Account is already a member",
+        });
+      }
+    }
     next(err);
   }
 };

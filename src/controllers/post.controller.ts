@@ -19,8 +19,7 @@ import {
   GenericObject,
   createObjectFromURLParamsAttributes,
 } from "../utils/utilsFunctions";
-import { Like, Prisma } from "@prisma/client";
-import { aggregateLikes, getLikes } from "../services/like.service";
+import { Prisma } from "@prisma/client";
 
 export const createPostHandler = async (
   req: Request<CreatePostInput>,
@@ -110,7 +109,15 @@ export const getPostsHandler = async (
   next: NextFunction
 ) => {
   try {
-    const posts = await getPosts();
+    const { where, select, include } = createObjectFromURLParamsAttributes(
+      req.query as GenericObject
+    );
+
+    const posts = await getPosts(
+      where as Prisma.PostWhereInput,
+      select as Prisma.PostSelect,
+      include as Prisma.PostInclude
+    );
 
     if (!posts) {
       return next(new AppError(404, "Posts not found"));

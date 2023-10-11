@@ -30,8 +30,18 @@ const params = {
   }),
 };
 
+const paramsCollectionAccounts = {
+  query: object({
+    where: string(),
+  }),
+};
+
 export const getCollectionSchema = object({
   ...params,
+});
+
+export const getCollectionsAccountsSchema = object({
+  ...paramsCollectionAccounts,
 });
 
 export const updateCollectionSchema = object({
@@ -58,3 +68,6 @@ export type GetCollectionInput = TypeOf<typeof getCollectionSchema>["params"];
 export type DeleteCollectionInput = TypeOf<
   typeof deleteCollectionSchema
 >["params"];
+export type GetCollectionsAccountsInput = TypeOf<
+  typeof getCollectionsAccountsSchema
+>["query"];

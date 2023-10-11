@@ -20,12 +20,11 @@ import {
 
 const router = express.Router();
 
+router.route("/").get(getPostsHandler);
+
 router.use(deserializeUser, requireUser);
 
-router
-  .route("/")
-  .post(validate(createPostSchema), createPostHandler)
-  .get(getPostsHandler);
+router.route("/").post(validate(createPostSchema), createPostHandler);
 
 router
   .route("/collection/:collectionId")

@@ -20,8 +20,16 @@ export const getPost = async (
   })) as Post & Prisma.PostInclude;
 };
 
-export const getPosts = async () => {
-  return await prisma.post.findMany();
+export const getPosts = async (
+  where?: Prisma.PostWhereInput,
+  select?: Prisma.PostSelect,
+  include?: Prisma.PostInclude
+) => {
+  return await prisma.post.findMany({
+    ...(where && { where }),
+    ...(!select && include && { include }),
+    ...(!include && select && { select }),
+  });
 };
 
 export const getPostsByCollectionId = async (

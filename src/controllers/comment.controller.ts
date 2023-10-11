@@ -1,12 +1,18 @@
 import { NextFunction, Request, Response } from "express";
-import { createComment, getComments } from "../services/comment.service";
-import { getPost } from "../services/post.service";
+import {
+  createComment,
+  deleteComment,
+  getComments,
+  getComment,
+  updateComment,
+} from "../services/comment.service";
 import AppError from "../utils/appError";
 import {
   GenericObject,
   createObjectFromURLParamsAttributes,
 } from "../utils/utilsFunctions";
 import { Prisma } from "@prisma/client";
+import { DeleteCommentInput } from "../schemas/comment.schema";
 
 export const createCommentHandler = async (
   req: Request,
@@ -73,6 +79,63 @@ export const getCommentsForPostHandler = async (
 
     //const comments
   } catch (err: any) {
+    next(err);
+  }
+};
+
+export const deleteCommentHandler = async (
+  req: Request<DeleteCommentInput>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const comment = await getComment({
+      id: req.params.commentId,
+    });
+
+    if (!comment) {
+      return next(new AppError(404, "Comment not found"));
+    }
+
+    await deleteComment({
+      id: comment.id,
+    });
+
+    res.status(204).json({
+      status: "success",
+      data: null,
+    });
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const updateCommentHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const comment = await getComment({ id: req.params.commentId });
+
+    if (!comment) {
+      return next(new AppError(404, "Comment not found"));
+    }
+
+    const updatedComment = await updateComment(
+      {
+        id: comment.id,
+      },
+      req.body
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        updatedComment,
+      },
+    });
+  } catch (err) {
     next(err);
   }
 };

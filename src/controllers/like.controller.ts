@@ -6,9 +6,8 @@ import {
   getLikes,
   updateLike,
 } from "../services/like.service";
-import { CreateLikeInput, UpdateLikeInput } from "../schemas/like.schema";
+import { CreateLikeInput } from "../schemas/like.schema";
 import AppError from "../utils/appError";
-import { deletePost } from "../services/post.service";
 
 export const createLikeHandler = async (
   req: Request<{}, CreateLikeInput>,
@@ -16,30 +15,17 @@ export const createLikeHandler = async (
   next: NextFunction
 ) => {
   const { postId, commentId, ...rest } = req.body;
-  const likeConnection = postId
-    ? {
-        posts: {
-          connect: {
-            id: postId,
-          },
-        },
-      }
-    : {
-        comments: {
-          connect: {
-            id: commentId,
-          },
-        },
-      };
+
   try {
     const like = await createLike({
       ...rest,
+      ...(postId && { posts: { connect: { id: postId } } }),
+      ...(commentId && { comments: { connect: { id: commentId } } }),
       author: {
         connect: {
           id: res.locals.user.id,
         },
       },
-      ...likeConnection,
     });
 
     res.status(201).json({

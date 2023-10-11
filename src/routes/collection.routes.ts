@@ -6,13 +6,17 @@ import {
   createCollectionSchema,
   deleteCollectionSchema,
   getCollectionSchema,
+  getCollectionsAccountsSchema,
   updateCollectionSchema,
 } from "../schemas/collection.schema";
 import {
   createCollectionHandler,
   deleteCollectionHandler,
   getCollectionHandler,
+  getCollectionsAccountsHandler,
   getCollectionsHandler,
+  joinCollectionHandler,
+  leaveCollectionHandler,
   updateCollectionHandler,
 } from "../controllers/collection.controller";
 
@@ -22,8 +26,17 @@ router.use(deserializeUser, requireUser);
 
 router
   .route("/")
-  .post(validate(createCollectionSchema), createCollectionHandler)
-  .get(getCollectionsHandler);
+  .get(getCollectionsHandler)
+  .post(validate(createCollectionSchema), createCollectionHandler);
+
+router
+  .route("/accounts")
+  .get(validate(getCollectionsAccountsSchema), getCollectionsAccountsHandler);
+
+router
+  .route("/accounts/:collectionId")
+  .post(joinCollectionHandler)
+  .delete(/*validate(getCollectionsAccountsSchema),*/ leaveCollectionHandler);
 
 router
   .route("/:collectionId")
