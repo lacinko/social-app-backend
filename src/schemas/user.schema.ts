@@ -61,6 +61,7 @@ export const updateUserSchema = object({
       .max(32, "Password must be less than 32 characters"),
     passwordConfirm: string({}),
     role: z.optional(z.nativeEnum(RoleEnumType)),
+    photo: string(),
   })
     .partial()
     .refine((data) => data.password === data.passwordConfirm, {

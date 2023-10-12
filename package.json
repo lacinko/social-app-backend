@@ -23,12 +23,14 @@
     "@types/node": "^20.5.6",
     "@types/nodemailer": "^6.4.9",
     "@types/pug": "^2.0.6",
+    "@types/sharp": "^0.32.0",
     "morgan": "^1.10.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
     "@prisma/client": "^5.2.0",
     "@types/lodash-es": "^4.17.8",
+    "@types/multer": "^1.4.8",
     "bcryptjs": "^2.4.3",
     "config": "^3.3.9",
     "cookie-parser": "^1.4.6",
@@ -39,10 +41,12 @@
     "html-to-text": "^9.0.5",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.4",
     "prisma": "^5.2.0",
     "pug": "^3.0.2",
     "redis": "^4.6.8",
+    "sharp": "^0.32.6",
     "ts-node-dev": "^2.0.0",
     "zod": "^3.22.2"
   }

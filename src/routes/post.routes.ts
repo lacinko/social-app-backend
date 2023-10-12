@@ -17,6 +17,12 @@ import {
   getPostsByCollectionIdSchema,
   updatePostSchema,
 } from "../schemas/post.schema";
+import { uploadPostImageDisk } from "../upload/single-upload-disk";
+import {
+  resizePostImage,
+  resizePostImages,
+  uploadPostImages,
+} from "../upload/multi-upload-sharp";
 
 const router = express.Router();
 
@@ -24,7 +30,14 @@ router.route("/").get(getPostsHandler);
 
 router.use(deserializeUser, requireUser);
 
-router.route("/").post(validate(createPostSchema), createPostHandler);
+router
+  .route("/")
+  .post(
+    uploadPostImages,
+    resizePostImages,
+    validate(createPostSchema),
+    createPostHandler
+  );
 
 router
   .route("/collection/:collectionId")
@@ -33,7 +46,12 @@ router
 router
   .route("/:postId")
   .get(validate(getPostSchema), getPostHandler)
-  .patch(validate(updatePostSchema), updatePostHandler)
+  .patch(
+    uploadPostImages,
+    resizePostImages,
+    validate(updatePostSchema),
+    updatePostHandler
+  )
   .delete(validate(deletePostSchema), deletePostHandler);
 
 export default router;
