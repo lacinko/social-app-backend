@@ -21,6 +21,7 @@ import AppError from "../utils/appError";
 import redisClient from "../utils/connectRedis";
 import { signJwt, verifyJwt } from "../utils/jwt";
 import Email from "../utils/email";
+import { selectDefaultImagePathFromFolderImages } from "../utils/utilsFunctions";
 
 // ? Cookie Options Here
 
@@ -63,10 +64,15 @@ export const registerUserHandler = async (
       .update(verifyCode)
       .digest("hex");
 
+    const defaultImage = await selectDefaultImagePathFromFolderImages(
+      "public\\profile"
+    );
+
     const user = await createUser({
       name: req.body.name,
       email: req.body.email.toLowerCase(),
       password: hashedPassword,
+      photo: defaultImage,
       verificationCode,
     });
 

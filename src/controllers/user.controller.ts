@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { findUniqueUser, updateUser } from "../services/user.service";
 import AppError from "../utils/appError";
+import { deleteOldImageFromDisk } from "../utils/utilsFunctions";
 
 export const getMeHandler = async (
   req: Request,
@@ -28,11 +29,14 @@ export const updateUserHandler = async (
 ) => {
   try {
     const user = await findUniqueUser({ id: res.locals.user.id });
-    const file = req.file;
 
     if (!user) {
       return next(new AppError(404, "User not found"));
     }
+
+    await deleteOldImageFromDisk(
+      `${__dirname}/../../public/profile/${user.photo}`
+    );
 
     const updatedUser = await updateUser(
       {
