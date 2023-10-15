@@ -17,9 +17,7 @@ import {
   getPostsByCollectionIdSchema,
   updatePostSchema,
 } from "../schemas/post.schema";
-import { uploadPostImageDisk } from "../upload/single-upload-disk";
 import {
-  resizePostImage,
   resizePostImages,
   uploadPostImages,
 } from "../upload/multi-upload-sharp";

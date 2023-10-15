@@ -1,4 +1,4 @@
-import { object, string, TypeOf, z } from "zod";
+import { any, object, string, TypeOf, z } from "zod";
 
 enum RoleEnumType {
   ADMIN = "admin",
@@ -61,7 +61,7 @@ export const updateUserSchema = object({
       .max(32, "Password must be less than 32 characters"),
     passwordConfirm: string({}),
     role: z.optional(z.nativeEnum(RoleEnumType)),
-    photo: string(),
+    photo: any(),
   })
     .partial()
     .refine((data) => data.password === data.passwordConfirm, {

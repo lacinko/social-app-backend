@@ -27,7 +27,8 @@ export const updateUserHandler = async (
   next: NextFunction
 ) => {
   try {
-    const user = await findUniqueUser({ id: res.locals.user });
+    const user = await findUniqueUser({ id: res.locals.user.id });
+    const file = req.file;
 
     if (!user) {
       return next(new AppError(404, "User not found"));

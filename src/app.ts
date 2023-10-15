@@ -11,6 +11,7 @@ import postRouter from "./routes/post.routes";
 import collectionRouter from "./routes/collection.routes";
 import commentRouter from "./routes/comment.routes";
 import likeRouter from "./routes/like.routes";
+import uploadRouter from "./routes/upload.routes";
 import AppError from "./utils/appError";
 import prisma from "./utils/connectPrisma";
 
@@ -49,6 +50,8 @@ async function bootstrap() {
   app.use("/api/collections", collectionRouter);
   app.use("/api/comments", commentRouter);
   app.use("/api/likes", likeRouter);
+  app.use("/api/upload", uploadRouter);
+  app.use("/images", express.static("public"));
 
   // Testing
   app.get("/api/healthchecker", (_, res: Response) => {
