@@ -26,10 +26,21 @@ export const createPostHandler = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { collectionId, ...rest } = req.body;
+  const { collectionId, images, ...rest } = req.body;
+  //TODO TIDY UP CODE
+  const postImages = images.map((img) => {
+    return {
+      url: img,
+    };
+  });
   try {
     const post = await createPost({
       ...rest,
+      images: {
+        createMany: {
+          data: postImages,
+        },
+      },
       author: { connect: { id: res.locals.user.id } },
       collection: { connect: { id: collectionId } },
     });

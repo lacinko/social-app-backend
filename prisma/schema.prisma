@@ -51,10 +51,9 @@ model Post {
   id String @id @default(uuid())
   title String 
   content String 
-  image String @default("default-post.png")
-  //FROM PRISMA TUTORIAL
+
   published Boolean @default(false)
-  //
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -66,9 +65,24 @@ model Post {
 
   likes Like[]
   comments Comment[]
+  images PostImage[]
 
   @@unique([title])
   @@index([title])
+}
+
+model PostImage {
+  @@map(name: "postimages")
+
+  id      String @id @default(uuid())
+  url     String 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postId  String
+  post    Post @relation(fields: [postId], references: [id])
+  
 }
 
 enum CollectionType {

@@ -28,14 +28,12 @@ router.route("/").get(getPostsHandler);
 
 router.use(deserializeUser, requireUser);
 
-router
-  .route("/")
-  .post(
-    uploadPostImages,
-    resizePostImages,
-    validate(createPostSchema),
-    createPostHandler
-  );
+router.route("/").post(
+  uploadPostImages(5),
+  resizePostImages("posts", "post", "jpeg", 90, 450, 800),
+  //validate(createPostSchema),
+  createPostHandler
+);
 
 router
   .route("/collection/:collectionId")
@@ -45,8 +43,8 @@ router
   .route("/:postId")
   .get(validate(getPostSchema), getPostHandler)
   .patch(
-    uploadPostImages,
-    resizePostImages,
+    uploadPostImages(5),
+    resizePostImages("posts", "post", "jpeg", 90, 450, 800),
     validate(updatePostSchema),
     updatePostHandler
   )

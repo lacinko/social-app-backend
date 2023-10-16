@@ -22,53 +22,67 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-export const uploadPostImages = upload.fields([
-  { name: "image", maxCount: 1 },
-  { name: "images", maxCount: 3 },
-]);
+export const uploadPostImages = (maxImages: number = 5) =>
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "images", maxCount: maxImages },
+  ]);
 
-export const resizePostImages = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    if (!req.files) return next();
+export const resizePostImages =
+  (
+    folder: string,
+    imagePrefix: string,
+    imageFormat: keyof sharp.FormatEnum,
+    imageQuality: number,
+    imageHeight: number,
+    imageWidth: number,
+    imageFit?: keyof sharp.FitEnum | undefined
+  ) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.files) return next();
 
-    // resize imageCover
-    // @ts-ignore
-    if (req.files?.image) {
-      const filename = `post-${uniqueId()}-${Date.now()}.jpeg`;
-      req.body.image = filename;
+      // resize imageCover
       // @ts-ignore
-      await sharp(req.files?.image[0]?.buffer)
-        .resize(800, 450)
-        .toFormat("jpeg")
-        .jpeg({ quality: 90 })
-        .toFile(`${__dirname}/../../public/posts/single/${filename}`);
+      if (req.files?.image) {
+        const fileName = `${imagePrefix}-${uniqueId()}-${Date.now()}.${imageFormat}`;
+        await sharp(req.file?.buffer)
+          .resize(imageWidth, imageHeight, {
+            fit: imageFit,
+          })
+          .toFormat(imageFormat)
+          .jpeg({ quality: imageQuality })
+          .toFile(`${__dirname}/../../public/${folder}/single/${fileName}`);
+
+        req.body.image = fileName;
+      }
+
+      // resize images
+      // @ts-ignore
+      if (req.files.images) {
+        req.body.images = [];
+        await Promise.all(
+          // @ts-ignore
+          req?.files?.images.map((file, i) => {
+            const fileName = `${imagePrefix}-${uniqueId()}-${Date.now()}.${imageFormat}`;
+
+            req.body.images.push(fileName);
+
+            return sharp(file.buffer)
+              .resize(imageWidth, imageHeight, {
+                fit: imageFit,
+              })
+              .toFormat(imageFormat)
+              .jpeg({ quality: imageQuality })
+              .toFile(
+                `${__dirname}/../../public/${folder}/multiple/${fileName}`
+              );
+          })
+        );
+      }
+
+      next();
+    } catch (err: any) {
+      next(err);
     }
-
-    // resize images
-    // @ts-ignore
-    if (req.files.images) {
-      req.body.images = [];
-      await Promise.all(
-        // @ts-ignore
-        req?.files?.images.map((file, i) => {
-          const filename = `post-${uniqueId()}-${Date.now()}-${i + 1}.jpeg`;
-
-          req.body.images.push(filename);
-          return sharp(file.buffer)
-            .resize(800, 450)
-            .toFormat("jpeg")
-            .jpeg({ quality: 90 })
-            .toFile(`${__dirname}/../../public/posts/multiple/${filename}`);
-        })
-      );
-    }
-
-    next();
-  } catch (err: any) {
-    next(err);
-  }
-};
+  };
