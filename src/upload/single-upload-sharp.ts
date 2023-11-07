@@ -44,6 +44,7 @@ export const resizePostImage =
       await sharp(req.file?.buffer)
         .resize(imageWidth, imageHeight, {
           fit: imageFit,
+          background: { r: 255, g: 255, b: 255, alpha: 0 },
         })
         .toFormat(imageFormat)
         .jpeg({ quality: imageQuality })

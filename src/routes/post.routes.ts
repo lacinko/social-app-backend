@@ -30,7 +30,7 @@ router.use(deserializeUser, requireUser);
 
 router.route("/").post(
   uploadPostImages(5),
-  resizePostImages("posts", "post", "jpeg", 90, 450, 800),
+  resizePostImages("posts", "post", "webp", 90, 450, 800, "contain"),
   //validate(createPostSchema),
   createPostHandler
 );
@@ -44,7 +44,7 @@ router
   .get(validate(getPostSchema), getPostHandler)
   .patch(
     uploadPostImages(5),
-    resizePostImages("posts", "post", "jpeg", 90, 450, 800),
+    resizePostImages("posts", "post", "webp", 90, 450, 800, "contain"),
     validate(updatePostSchema),
     updatePostHandler
   )

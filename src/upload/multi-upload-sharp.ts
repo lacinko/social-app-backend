@@ -49,6 +49,7 @@ export const resizePostImages =
         await sharp(req.file?.buffer)
           .resize(imageWidth, imageHeight, {
             fit: imageFit,
+            background: { r: 255, g: 255, b: 255, alpha: 0 },
           })
           .toFormat(imageFormat)
           .jpeg({ quality: imageQuality })
@@ -68,15 +69,18 @@ export const resizePostImages =
 
             req.body.images.push(fileName);
 
-            return sharp(file.buffer)
-              .resize(imageWidth, imageHeight, {
-                fit: imageFit,
-              })
-              .toFormat(imageFormat)
-              .jpeg({ quality: imageQuality })
-              .toFile(
-                `${__dirname}/../../public/${folder}/multiple/${fileName}`
-              );
+            return (
+              sharp(file.buffer)
+                .resize(imageWidth, imageHeight, {
+                  fit: imageFit,
+                  background: { r: 255, g: 255, b: 255, alpha: 0 },
+                })
+                .toFormat(imageFormat, { quality: imageQuality })
+                //.webp({ quality: imageQuality })
+                .toFile(
+                  `${__dirname}/../../public/${folder}/multiple/${fileName}`
+                )
+            );
           })
         );
       }

@@ -28,11 +28,12 @@ export const createPostHandler = async (
 ) => {
   const { collectionId, images, ...rest } = req.body;
   //TODO TIDY UP CODE
-  const postImages = images.map((img) => {
-    return {
-      url: img,
-    };
-  });
+  const postImages =
+    images?.map((img) => {
+      return {
+        url: img,
+      };
+    }) || [];
   try {
     const post = await createPost({
       ...rest,

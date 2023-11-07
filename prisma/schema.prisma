@@ -81,7 +81,7 @@ model PostImage {
   updatedAt DateTime @updatedAt
 
   postId  String
-  post    Post @relation(fields: [postId], references: [id])
+  post    Post @relation(fields: [postId], references: [id], onDelete: Cascade)
   
 }
 
